@@ -1,22 +1,10 @@
 import React from "react";
 import {View,Text,TextInput ,Button,StyleSheet} from "react-native"
 import * as SQLite from "expo-sqlite";
+import {openDatabase, createTable,getItem,insertItemFullVariation,selectItem,insertItemSingleVariation, insertItem,
+  getItemSingleVar,getItemMultiVar} from "../Service.js";
 
-function openDatabase() {
-    if (Platform.OS === "web") {
-      return {
-        transaction: () => {
-          return {
-            executeSql: () => {},
-          };
-        },
-      };
-    }
-  
-    const db = SQLite.openDatabase("db.db");
-    return db;
-  }
-  
+
   const db = openDatabase();
 const LoginScreen = ({navigation}) =>{
         const [itemId, setItemId] = React.useState(null);
@@ -26,46 +14,24 @@ const LoginScreen = ({navigation}) =>{
     const [Password, onChangePassword] = React.useState("");
 
     React.useEffect(()=>{
-        db.transaction((tx) => {
-            tx.executeSql(
-              "create table if not exists table_user(user_id INTEGER PRIMARY KEY AUTOINCREMENT,user_name VARCHAR(20),user_pass VARCHAR(255));"
-            );
-            tx.executeSql(
-                "create table if not exists table_categories(cat_id INTEGER PRIMARY KEY AUTOINCREMENT,cat_name VARCHAR(20));"
-              );
-            tx.executeSql(
-                "create table if not exists table_item(item_id INTEGER PRIMARY KEY AUTOINCREMENT,item_name VARCHAR(20),item_price VARCHAR(10),  categories_reference INTEGER, FOREIGN KEY (categories_reference) REFERENCES table_categories(cat_id));"
-              );
-            tx.executeSql(
-                "create table if not exists table_variation(variation_id INTEGER PRIMARY KEY AUTOINCREMENT,variation_name VARCHAR(255),  item_reference INTEGER, FOREIGN KEY (item_reference) REFERENCES table_item(item_id));"
-              );
-
-              tx.executeSql(
-                'create table if not exists table_variationvalue(variationvalue_id INTEGER PRIMARY KEY AUTOINCREMENT,variationvalue_name VARCHAR(255),variation_reference INTEGER, parent_reference INTEGER, FOREIGN KEY (variation_reference) REFERENCES table_variation(variation_id));'
-              );
-          });
+      createTable();
     },[])
 
 
     const login =()=>{
-        db.transaction((tx)=>{
-            tx.executeSql(
-                'SELECT * FROM table_user WHERE user_name = ? AND user_pass = ?',
-                [username,Password],
-                (tx, results) => {
-                  var len = results.rows.length;
-                  
-                  if (len > 0) {
-                    navigation.navigate("Home")
-                  } else {
-                    alert('Username or Password is wrong');
-                  }
-                }
-              );
-        })
+      selectItem();
     }
 
-    const genTest =()=>{
+    const genTest = async() => {
+      await getItem().then((value) =>{
+        console.debug(JSON.stringify(value));
+      })
+      await getItemSingleVar().then((value) =>{
+        console.debug(JSON.stringify(value));
+      })
+      await getItemMultiVar().then((value) =>{
+        console.debug(JSON.stringify(value));
+      })
 
        /* db.transaction((tx)=>{
           tx.executeSql(
@@ -89,32 +55,11 @@ const LoginScreen = ({navigation}) =>{
 
               )}
 
-          )}
+          )} 
 
         )*/
      
-        db.transaction((tx)=>{
-          tx.executeSql(
-            "SELECT table_item.item_name, table_variation.variation_name, v1.variationvalue_name as Parent, v2.variationvalue_name as Child FROM table_item LEFT JOIN table_variation ON table_variation.item_reference = table_item.item_id LEFT JOIN table_variationvalue v1 ON table_variation.variation_id  = v1.variation_reference LEFT JOIN table_variationvalue v2 ON v1.variationvalue_id = v2.parent_reference WHERE table_item.item_id = 1",
-            [],
-            (tx,result)=>{
-              console.debug(JSON.stringify(result.rows))
-            }
-          )
-        })
-
-        
-        
-        db.transaction((tx)=>{
-          tx.executeSql(
-          "SELECT v0.variation_name, v2.variationvalue_name as child, v1.variationvalue_name as parent  FROM table_variation v0 INNER JOIN table_variationvalue v1 ON v0.variation_id = v1.variationvalue_id LEFT JOIN table_variationvalue v2 ON v1.variationvalue_id = v2.parent_reference WHERE v0.variation_id = 1",
-            [],
-            (tx,result)=>{
-              console.debug(JSON.stringify(result.rows))
-            }
-          )
-        })
-        console.debug("itemId" + itemId + "variationId" + variationId + "valueId" + valueId);
+      
 
     }
 
