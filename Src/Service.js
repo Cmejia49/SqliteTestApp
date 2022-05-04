@@ -15,7 +15,7 @@ export const openDatabase =  () => {
     return db;
   }
 
-  export const createTable =  ()=>{
+  export const createTable = ()=>{
       const db =  openDatabase();
       console.debug("create table")
     db.transaction((tx) => {
@@ -67,13 +67,13 @@ export const openDatabase =  () => {
   
   }
 
-  export const getItem = () =>{
+  export const getItem = (id) =>{
       return new Promise((resolve, reject)=>{
-       const db =  SQLite.openDatabase("db.db");
+       const db = openDatabase();
         db.transaction((tx)=>{
             tx.executeSql(
-                "SELECT table_item.item_name, s.stock_id FROM table_item LEFT JOIN table_stock s ON s.item_reference = table_item.item_id WHERE table_item.item_id = 3",
-              [],
+                "SELECT table_item.item_name, s.stock_id FROM table_item LEFT JOIN table_stock s ON s.item_reference = table_item.item_id WHERE table_item.item_id = ?",
+              [id],
               (tx,result)=>{
                   resolve(result.rows);
               }
@@ -83,13 +83,13 @@ export const openDatabase =  () => {
   }
 
 
-export const getItemSingleVar = () =>{
+export const getItemSingleVar = (id) =>{
   return new Promise((resolve, reject)=>{
-   const db =  SQLite.openDatabase("db.db");
+   const db = openDatabase();
     db.transaction((tx)=>{
         tx.executeSql(
-            "SELECT table_item.item_name, table_variation.variation_name, v1.variationvalue_name as Parent, s.stock_id FROM table_item LEFT JOIN table_variation ON table_variation.item_reference = table_item.item_id LEFT JOIN table_variationvalue v1 ON table_variation.variation_id  = v1.variation_reference LEFT JOIN table_stock s ON s.variationvalue_reference = v1.variationvalue_id WHERE table_item.item_id = 2",
-          [],
+            "SELECT table_item.item_name, table_variation.variation_name, v1.variationvalue_name as Parent, s.stock_id FROM table_item LEFT JOIN table_variation ON table_variation.item_reference = table_item.item_id LEFT JOIN table_variationvalue v1 ON table_variation.variation_id  = v1.variation_reference LEFT JOIN table_stock s ON s.variationvalue_reference = v1.variationvalue_id WHERE table_item.item_id = ?",
+          [id],
           (tx,result)=>{
               resolve(result.rows);
           }
@@ -98,13 +98,13 @@ export const getItemSingleVar = () =>{
   })
 }
 
-export const getItemMultiVar = () =>{
+export const getItemMultiVar = (id) =>{
   return new Promise((resolve, reject)=>{
-   const db =  SQLite.openDatabase("db.db");
+   const db = openDatabase();
     db.transaction((tx)=>{
         tx.executeSql(
-            "SELECT table_item.item_name, table_variation.variation_name, v1.variationvalue_name as Parent, v2.variationvalue_name as Child, s.stock_id FROM table_item LEFT JOIN table_variation ON table_variation.item_reference = table_item.item_id LEFT JOIN table_variationvalue v1 ON table_variation.variation_id  = v1.variation_reference LEFT JOIN table_variationvalue v2 ON v1.variationvalue_id = v2.parent_reference LEFT JOIN table_stock s ON s.variationvalue_reference = v2.variationvalue_id WHERE table_item.item_id = 1",
-          [],
+            "SELECT table_item.item_name, table_variation.variation_name, v1.variationvalue_name as Parent, v2.variationvalue_name as Child, s.stock_id FROM table_item LEFT JOIN table_variation ON table_variation.item_reference = table_item.item_id LEFT JOIN table_variationvalue v1 ON table_variation.variation_id  = v1.variation_reference LEFT JOIN table_variationvalue v2 ON v1.variationvalue_id = v2.parent_reference LEFT JOIN table_stock s ON s.variationvalue_reference = v2.variationvalue_id WHERE table_item.item_id = ?",
+          [id],
           (tx,result)=>{
               resolve(result.rows);
           }

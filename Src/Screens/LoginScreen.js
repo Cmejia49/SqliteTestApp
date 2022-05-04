@@ -13,8 +13,8 @@ const LoginScreen = ({navigation}) =>{
     const [username, onChangeUserName] = React.useState("");
     const [Password, onChangePassword] = React.useState("");
 
-    React.useEffect(()=>{
-      createTable();
+    React.useEffect(async ()=>{
+      await createTable();
     },[])
 
 
@@ -23,13 +23,13 @@ const LoginScreen = ({navigation}) =>{
     }
 
     const genTest = async() => {
-      await getItem().then((value) =>{
+      await getItem(3).then((value) =>{
         console.debug(JSON.stringify(value));
       })
-      await getItemSingleVar().then((value) =>{
+      await getItemSingleVar(2).then((value) =>{
         console.debug(JSON.stringify(value));
       })
-      await getItemMultiVar().then((value) =>{
+      await getItemMultiVar(1).then((value) =>{
         console.debug(JSON.stringify(value));
       })
 
