@@ -1,10 +1,10 @@
 import React from "react";
-import {View,Text,TextInput ,Button,StyleSheet} from "react-native"
+import {View,TextInput,StyleSheet} from "react-native"
 import * as SQLite from "expo-sqlite";
 import {openDatabase, createTable,getItem,insertItemFullVariation,selectItem,insertItemSingleVariation, insertItem,
-  getItemSingleVar,getItemMultiVar} from "../Service.js";
+  getItemSingleVar,getItemMultiVar,update} from "../Service.js";
 
-
+  import { ApplicationProvider, Layout, Text,Button,Input  } from '@ui-kitten/components';
   const db = openDatabase();
 const LoginScreen = ({navigation}) =>{
         const [itemId, setItemId] = React.useState(null);
@@ -19,7 +19,7 @@ const LoginScreen = ({navigation}) =>{
 
 
     const login =()=>{
-      selectItem();
+     update(3,1)
     }
 
     const genTest = async() => {
@@ -64,52 +64,46 @@ const LoginScreen = ({navigation}) =>{
     }
 
     return(
-        <View style={style.container}>
-            <Text>
-                This is LoginScreen
-            </Text>
-            <View style={style.inputeView}>
-            <TextInput
+        <Layout style={style.container}>
+            <Layout style={style.inputeView}>
+            <Input
                 style={style.input}
                 onChangeText={onChangeUserName}
                 value={username}
                 placeholder="Username"
             />
-                 <TextInput
+                 <Input
                 style={style.input}
                 onChangeText={onChangePassword}
                 value={Password}
                 placeholder="Password"
                 secureTextEntry={true} 
             />
-            </View>
-            <View style={{margin:10, flexDirection:'row', justifyContent:'space-between'}}>
-                <Button 
+              <Layout style={{flexDirection:'row', justifyContent:'center', marginTop:15}}>
+                <Button style={{margin:5}}  status='primary'
                     onPress={()=>{
                         login();
-                    }}
-                    title="Login"/>
-                <Button   
-                    onPress={() => navigation.navigate('Register')}
-                    title="Register"/>
+                    }}>Login</Button>
+                <Button style={{margin:5}}  status='primary' onPress={() => navigation.navigate('Register')}>Register</Button>
 
-                <Button   
-                    onPress={()=>{genTest()}}
-                    title="Gen"/>
-            </View>
+                <Button style={{margin:5}} status='primary' onPress={()=>{genTest()}}>GEN</Button>
+              </Layout>
+
+            </Layout>
       
-        </View>
+        </Layout>
     )
 }
 
 const style = StyleSheet.create({
     container:{
         flex:1,
-        margin:5
     },
 
     inputeView:{
-        justifyContent:'space-between'
+        flex:1,
+        marginBottom:20,
+        justifyContent:'center'
     },
     
     input:{

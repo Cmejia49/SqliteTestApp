@@ -207,4 +207,37 @@ export const insertItem = () =>{
             })         
    })
 }
+
+
+
+export const update = (q,id)=>{
+  const db = openDatabase();
+
+  db.transaction((tx)=>{
+    tx.executeSql(
+      "UPDATE table_stock SET stock_quantity = stock_quantity - (?) WHERE stock_id = (?)",
+      [q,id],
+      (tx,result)=>{
+        console.debug(result.rowsAffected);
+      },
+      (tx, error)=>{
+        console.debug(error);
+      }
+    )
+  })
+
+  db.transaction((tx)=>{
+    tx.executeSql(
+      "SELECT * FROM table_stock WHERE (?)",
+      [id],
+      (tx,result)=>{
+        console.debug(JSON.stringify(result.rows));
+      },
+      (tx, error)=>{
+        console.debug(error);
+      }
+    )
+  })
+}
+
   
