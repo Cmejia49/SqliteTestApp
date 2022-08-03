@@ -1,15 +1,11 @@
 import React from "react";
-import {View,TextInput,StyleSheet} from "react-native"
-import * as SQLite from "expo-sqlite";
-import {openDatabase, createTable,getItem,insertItemFullVariation,selectItem,insertItemSingleVariation, insertItem,
-  getItemSingleVar,getItemMultiVar,update} from "../Service.js";
+import {StyleSheet} from "react-native"
+import {openDatabase, createTable} from "../Service.js";
+import {Layout,Button,Input  } from '@ui-kitten/components';
 
-  import { ApplicationProvider, Layout, Text,Button,Input  } from '@ui-kitten/components';
-  const db = openDatabase();
+const db = openDatabase();
+
 const LoginScreen = ({navigation}) =>{
-        const [itemId, setItemId] = React.useState(null);
-      const [variationId,setVariationId] = React.useState(null);
-      const [valueId,setValueId] = React.useState(null);
     const [username, onChangeUserName] = React.useState("");
     const [Password, onChangePassword] = React.useState("");
 
@@ -18,50 +14,27 @@ const LoginScreen = ({navigation}) =>{
     },[])
 
 
+ 
     const login =()=>{
-     update(3,1)
-    }
+        db.transaction((tx)=>{
+            tx.executeSql(
+                'SELECT * FROM table_user WHERE user_name = ? AND user_pass = ?',
+                [username,Password],
+                (tx, results) => {
+                  var len = results.rows.length;
 
-    const genTest = async() => {
-      await getItem(3).then((value) =>{
-        console.debug(JSON.stringify(value));
-      })
-      await getItemSingleVar(2).then((value) =>{
-        console.debug(JSON.stringify(value));
-      })
-      await getItemMultiVar(1).then((value) =>{
-        console.debug(JSON.stringify(value));
-      })
-
-       /* db.transaction((tx)=>{
-          tx.executeSql(
-            "INSERT INTO table_item (item_name, item_price) VALUES (?,?)",
-            ["itemA","123"],
-            (tx,result1)=>{
-              tx.executeSql("INSERT INTO table_variation (variation_name,item_reference) VALUES (?,?)",
-              ["COLOR",result1.insertId],
-              (tx,result2)=>{
-                tx.executeSql("INSERT INTO table_variationvalue (variationvalue_name, variation_reference) VALUES (?,?)",
-                ["RED",result2.insertId],
-                (tx,result3)=>{
-                  tx.executeSql("INSERT INTO table_variationvalue (variationvalue_name, parent_reference) VALUES (?,?)",
-                  ["11",result3.insertId],
-                    
-                  )
-                  console.debug(result3.rowsAffected)
+                  if (len > 0) {
+                    navigation.navigate("Home")
+                  } else {
+                    alert('Username or Password is wrong');
+                  }
                 }
-
-                )}
-
-              )}
-
-          )} 
-
-        )*/
-     
-      
-
+              );
+        })
     }
+
+  
+    
 
     return(
         <Layout style={style.container}>
@@ -86,7 +59,6 @@ const LoginScreen = ({navigation}) =>{
                     }}>Login</Button>
                 <Button style={{margin:5}}  status='primary' onPress={() => navigation.navigate('Register')}>Register</Button>
 
-                <Button style={{margin:5}} status='primary' onPress={()=>{genTest()}}>GEN</Button>
               </Layout>
 
             </Layout>

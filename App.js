@@ -7,10 +7,12 @@ import HomeScreen from './Src/Screens/HomeScreen';
 import LoginScreen from './Src/Screens/LoginScreen';
 import RegisterScreen from './Src/Screens/RegisterScreen';
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider } from '@ui-kitten/components';
+import { ApplicationProvider,IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 export default function App() {
   const Stack = createNativeStackNavigator();
   return (
+
     <ApplicationProvider {...eva} theme={eva.light}>
     <NavigationContainer>
        <Stack.Navigator initialRouteName="Login">
